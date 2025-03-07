@@ -1,3 +1,6 @@
+import random
+
+
 # Definición de clases
 
 ## Clase que hace de sensor IoT
@@ -42,13 +45,18 @@ class Floor:
 ## Clase que representa el edificio completo
 class Building:
     def __init__(self, num_floors, rooms_x_floor):
-        self.floors = [Floor(f"F{i+1}", rooms_x_floor) for i in range(num_floors)]
-        # Infectar la primera habitación del primer piso con zombis
-        self.floors[0].rooms[0].agregar_zombie()
+        self.floors = [Floor(f"P{i+1}", rooms_x_floor) for i in range(num_floors)]
+        # Infectar una habitación aleatoria con zombies
+        self.infectar_habitacion_aleatoria()
+
+    def infectar_habitacion_aleatoria(self):
+        # Seleccionar un piso y una habitación al azar
+        piso_aleatorio = random.choice(self.floors)
+        habitacion_aleatoria = random.choice(piso_aleatorio.rooms)
+        habitacion_aleatoria.agregar_zombie()
 
     def __str__(self):
         return "\n".join(str(floor) for floor in self.floors)
-
 
 ## Clase que representa la infestación de zombies en el edificio
 class Simulation:
@@ -57,17 +65,27 @@ class Simulation:
         self.turn = 0
 
     def mostrar_status(self):  # Muestra el estado actual del edificio
-        print(f"Turno {self.turn}")
+        print(f"\nTurno {self.turn}\n")
         print(self.building)
         print()
 
     def avance_turno(self):  # Simula el avance de turnos. Durante cada turno, los zombies se propagan a habitaciones adyacentes
         self.turn += 1
         for floor in self.building.floors:
-            for i in range(len(floor.rooms)):
-                if floor.rooms[i].zombie and i < len(floor.rooms) - 1:
-                    if not floor.rooms[i + 1].zombie:  # Solo propagar si la habitación siguiente no tiene zombis
+            for i, room in enumerate(floor.rooms):
+                if room.zombie:
+                    # Elegir una dirección aleatoria para propagar (izquierda, derecha, arriba, abajo)
+                    direccion = random.choice(["izquierda", "derecha", "arriba", "abajo"])
+                    if direccion == "izquierda" and i > 0:
+                        floor.rooms[i - 1].agregar_zombie()
+                    elif direccion == "derecha" and i < len(floor.rooms) - 1:
                         floor.rooms[i + 1].agregar_zombie()
+                    elif direccion == "arriba" and floor.floor_id != "F1":  # No propagar arriba en el primer piso
+                        piso_anterior = self.building.floors[self.building.floors.index(floor) - 1]
+                        piso_anterior.rooms[i].agregar_zombie()
+                    elif direccion == "abajo" and floor.floor_id != f"F{len(self.building.floors)}":  # No propagar abajo en el último piso
+                        piso_siguiente = self.building.floors[self.building.floors.index(floor) + 1]
+                        piso_siguiente.rooms[i].agregar_zombie()
         self.mostrar_status()
 
 
@@ -77,9 +95,11 @@ def main():
     simulation = Simulation(num_floors, hab_x_pisos)
 
     while True:
-        print("1. Mostrar status")
-        print("2. Avanzar turno")
-        print("3. Salir")
+        print("\n **********************************")
+        print("1. Mostrar status                 *")
+        print("2. Avanzar turno                  *")
+        print("3. Salir                          *")
+        print(" **********************************")
         choice = input("Elige una opción: ")
 
         if choice == "1":
