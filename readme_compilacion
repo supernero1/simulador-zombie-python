@@ -1,0 +1,19 @@
+*******   Clases   *******
+
+Clase Sensor: define el estado en que se encuentra la habitacion; normal o alerta si hay propagacion
+
+Clase Room: Clase que almacena la habitacion y contiene a la clase sensor, posee la funcion de agregar zombie a una habitacion si no hay zombies y cambia el estado a alerta
+
+Clase Floor: Clase que representa a cada piso del edificio inicializandolo y añadiendole un ID y contiene a la clase ROOM
+
+Clase Building: Respresenta al edificio por lo que contiene a los pisos y cuantas habitaciones por piso hay. Ademas contiene la funcion de infestar una habitacion aleatoria, con la funcion random
+
+Clase Simulation: Que es la representacion de toda la simulacion de inicio de infestacion y propagacion en cada piso.
+
+
+******* Compilacion *******
+opcion 1: Abrir el archivo en VSCODE y ejecutarlo
+opcion 2: Terminal
+
+-cd /(ubicacion del archivo)
+-python main.py    o  -python3 main.py
